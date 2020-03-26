@@ -7,7 +7,7 @@ let LAST_LOCATION = {};
 
 const Container = ({ children }) => {
 	const {
-		state: { direct, snake, foodExsit, food, stop },
+		state: { direct, snake, foodExist, food, stop },
 		changeDirection,
 		move,
 		createFood,
@@ -28,7 +28,7 @@ const Container = ({ children }) => {
 			setStop();
 		}
 
-		if (foodExsit) {
+		if (foodExist) {
 			if (snake[0].x === food.x && snake[0].y === food.y) {
 				eatFood(LAST_LOCATION);
 			}
@@ -37,7 +37,7 @@ const Container = ({ children }) => {
 		}
 
 		LAST_LOCATION = snake[length - 1];
-	}, [snake, foodExsit]);
+	}, [snake, foodExist]);
 
 	const onKeyDownHandler = (e) => {
 		const directObj = { 37: "left", 38: "top", 39: "right", 40: "down" };

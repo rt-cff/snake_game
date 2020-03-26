@@ -4,7 +4,7 @@ const initialState = {
 	snake: [{ x: 6, y: 5 }],
 	direct: "top",
 	food: {},
-	foodExsit: false,
+	foodExist: false,
 	stop: false
 };
 
@@ -68,7 +68,7 @@ const createFood = (dispatch, state) => () => {
 	const food = randomFoodPosition(snake);
 	dispatch({
 		type: actionTypes.CREATE_FOOD,
-		payload: { food, foodExsit: true }
+		payload: { food, foodExist: true }
 	});
 };
 
@@ -77,7 +77,7 @@ const eatFood = (dispatch, state) => (last_location) => {
 	const newSnake = [...snake, last_location];
 	dispatch({
 		type: actionTypes.EAT_FOOD,
-		payload: { foodExsit: false, snake: newSnake, food: {} }
+		payload: { foodExist: false, snake: newSnake, food: {} }
 	});
 };
 
