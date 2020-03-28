@@ -49,9 +49,6 @@ const Container = React.forwardRef(({ children }, ref) => {
 		if (keyCode === 13) 
 			reset();
 
-		// if (keyCode === 32) 
-		// 	toggleProgress();
-
 		if([37, 38, 39, 40].includes(keyCode))
 			changeDirection(keyCode - 37);
 	}, []);

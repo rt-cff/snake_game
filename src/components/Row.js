@@ -24,7 +24,8 @@ const Row = ({ yaxis }) => {
 				}
 			});
 
-if(snake[0].x === i && snake[0].y === yaxis) head = true
+			if(snake[0].x === i && snake[0].y === yaxis) 
+				head = true;
 
 			if (food.x === i && food.y === yaxis) {
 				_food = true;
