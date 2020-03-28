@@ -1,13 +1,13 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useCallback, useRef, useImperativeHandle, Profiler } from "react";
 import { Context as SnakeContext } from "../context/SnakeContext";
 import useInterval from "../hooks/useInterval";
 import _ from "lodash";
 
 let LAST_LOCATION = {};
 
-const Container = ({ children }) => {
+const Container = React.forwardRef(({ children }, ref) => {
 	const {
-		state: { direct, snake, foodExist, food, stop },
+		state: { snake, foodExist, food, stop },
 		changeDirection,
 		move,
 		createFood,
@@ -15,6 +15,12 @@ const Container = ({ children }) => {
 		setStop,
 		reset
 	} = useContext(SnakeContext);
+	const containerRef = useRef();
+	useImperativeHandle(ref, () => ({
+	  focus: () => {
+		containerRef.current.focus();
+	  }
+	}));
 
 	useEffect(() => {
 		const length = snake.length;
@@ -23,7 +29,7 @@ const Container = ({ children }) => {
 			snake[0].y < 0 ||
 			snake[0].x > 13 ||
 			snake[0].y > 10 ||
-			(snake.length > 3 && _.findIndex(snake.slice(1), snake[0]) !== -1)
+			(snake.length >= 3 && _.findIndex(snake.slice(1), snake[0]) !== -1)
 		) {
 			setStop();
 		}
@@ -39,36 +45,29 @@ const Container = ({ children }) => {
 		LAST_LOCATION = snake[length - 1];
 	}, [snake, foodExist]);
 
-	const onKeyDownHandler = (e) => {
-		const directObj = { 37: "left", 38: "top", 39: "right", 40: "down" };
-		const { keyCode } = e;
-
-		if (keyCode === 13) {
+	const onKeyDownHandler = useCallback(({ keyCode }) => {
+		if (keyCode === 13) 
 			reset();
-		}
 
-		if (directObj[keyCode] !== direct) {
-			if (
-				(direct === "left" && keyCode !== 39) ||
-				(direct === "right" && keyCode !== 37) ||
-				(direct === "top" && keyCode !== 40) ||
-				(direct === "down" && keyCode !== 38)
-			) {
-				changeDirection(directObj[keyCode]);
-			}
-		}
-	};
+		// if (keyCode === 32) 
+		// 	toggleProgress();
+
+		if([37, 38, 39, 40].includes(keyCode))
+			changeDirection(keyCode - 37);
+	}, []);
 
 	useInterval(move, !stop ? 250 : null);
 
 	return (
-		<div tabIndex="0" onKeyDown={onKeyDownHandler} className="body">
-			<div className="container">
-				<div className="score">Your Score: {snake.length - 1}</div>
-				{children}
+		<Profiler id="Container" onRender={(...p)=> console.log()}>
+			<div id='container' ref={containerRef} tabIndex="0" onKeyDown={onKeyDownHandler} className="body">
+				<div className="container">
+					<div className="score">Your Score: {snake.length - 1}</div>
+					{children}
+				</div>
 			</div>
-		</div>
+		</Profiler>
 	);
-};
+});
 
 export default Container;

@@ -33,32 +33,36 @@
 	background-color: chartreuse !important;
 }
 
+.cell.head {
+	background-color: red !important; 
+}
+
 .cell.food {
 	background-color: aqua !important;
 }
 
-.die {
+.msg {
 	position: fixed;
 	width: 100%;
 	height: 100%;
 	background-color: rgba(181, 199, 214, 0.288);
 }
 
-.die > div {
+.msg > div {
 	position: fixed;
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
 }
 
-.die-title {
+.msg-title {
 	text-align: center;
 	font-family: fantasy;
 	font-size: 1.5rem;
 	font-weight: bold;
 }
 
-.die-btn {
+.msg-btn {
 	position: relative;
 	left: 50%;
 	transform: translate(-50%, 0);
@@ -67,7 +71,7 @@
 	border-radius: 5px;
 }
 
-.die-btn:active {
+.msg-btn:active {
 	transform: translate(-45%, 15%) scale(0.95);
 }
 

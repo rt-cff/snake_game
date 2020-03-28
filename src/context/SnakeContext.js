@@ -1,83 +1,80 @@
 import createContextHelper from "./create.context.helper";
+import { act } from "react-dom/test-utils";
+
+const DIRECTION = ["left", "top", "right", "down"];
+/*
+	Left & Right Directiocn is at index 0 & 2 and have x value change at index - 1 per interval
+	Top & Down Directiocn is at index 1 & 3 and have y value change at index - 2 per interval
+*/
 
 const initialState = {
 	snake: [{ x: 6, y: 5 }],
 	direct: "top",
 	food: {},
 	foodExist: false,
-	stop: false
+	stop: true
 };
 
 const reducer = (state, { type, payload }) => {
 	switch (type) {
 		case actionTypes.CHANGE_DIRECTION:
-			return { ...state, direct: payload };
+			if(state.stop) 
+				return state
+
+			//return original state if same direction or opposite direction
+			return (state.direct === payload || Math.abs(DIRECTION.indexOf(payload) - DIRECTION.indexOf(state.direct)) === 2) ? state : { ...state, direct: payload };
 		case actionTypes.MOVE:
-			return { ...state, snake: payload };
+			return { ...state, snake: moveUtil(state) };
 		case actionTypes.CREATE_FOOD:
-			return { ...state, ...payload };
+			return { ...state, food: randomFoodPosition(state.snake), foodExist: true }
 		case actionTypes.EAT_FOOD:
-			return { ...state, ...payload };
+			return { ...state, ...payload, snake: [...state.snake, payload], foodExist: false };
 		case actionTypes.STOP:
 			return { ...state, stop: true };
 		case actionTypes.RESET:
-			return { ...initialState };
+			//do no reset if the game is running
+			return state.stop ? { ...initialState, stop: false } : state;
 		default:
 			return state;
 	}
 };
 
-const move = (dispatch, state) => () => {
+const moveUtil = (state) => {
 	const { direct, snake } = state;
-	let head = { ...snake[0] };
-	let body = [...snake];
-	let { x, y } = head;
-	switch (direct) {
-		case "left":
-			x--;
-			break;
-		case "right":
-			x++;
-			break;
-		case "down":
-			y++;
-			break;
-		case "top":
-		default:
-			y--;
-			break;
-	}
+	let { x, y } = snake[0];
+	const dirIndex = DIRECTION.indexOf(direct);
 
-	body = [{ x, y }, ...body];
-	body.pop();
+	if(dirIndex % 2 === 0) 
+		x += dirIndex - 1;
+	else 
+		y += dirIndex - 2;
+
+	return [{ x, y }, ...snake.slice(0, -1)]
+}
+
+const move = (dispatch) => () => {
 	dispatch({
-		type: actionTypes.MOVE,
-		payload: body
+		type: actionTypes.MOVE
 	});
 };
 
 const changeDirection = (dispatch) => (direct) => {
 	dispatch({
 		type: actionTypes.CHANGE_DIRECTION,
-		payload: direct
+		payload: DIRECTION[direct]
 	});
 };
 
-const createFood = (dispatch, state) => () => {
-	const { snake } = state;
-	const food = randomFoodPosition(snake);
+const createFood = (dispatch) => () => {
 	dispatch({
 		type: actionTypes.CREATE_FOOD,
-		payload: { food, foodExist: true }
 	});
 };
 
-const eatFood = (dispatch, state) => (last_location) => {
-	const { snake } = state;
-	const newSnake = [...snake, last_location];
+const eatFood = (dispatch) => (last_location) => {
 	dispatch({
 		type: actionTypes.EAT_FOOD,
-		payload: { foodExist: false, snake: newSnake, food: {} }
+		payload: last_location
 	});
 };
 
@@ -108,15 +105,8 @@ const actionTypes = {
 	RESET: "RESET"
 };
 
-const randomFoodPosition = (body) => {
-	const x = Math.floor(Math.random() * 14);
-	const y = Math.floor(Math.random() * 11);
-	let food = { x, y };
-	body.forEach((piece) => {
-		if (piece.x === x && piece.y === y) {
-			food = randomFoodPosition(body);
-		}
-	});
-
-	return food;
+const randomFoodPosition = (snake) => {
+	const x = Math.floor(Math.random() * 14), y = Math.floor(Math.random() * 11);
+	
+	return snake.some(s => s.x === x && s.y === y) ? randomFoodPosition(snake) : {x, y}
 };
