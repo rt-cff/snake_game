@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback, useRef, useImperativeHandle, Profiler } from "react";
+import React, { useContext, useState, useEffect, useCallback, useRef, useImperativeHandle } from "react";
 import { Context as SnakeContext } from "../context/SnakeContext";
 import useInterval from "../hooks/useInterval";
 import _ from "lodash";
@@ -56,14 +56,12 @@ const Container = React.forwardRef(({ children }, ref) => {
 	useInterval(move, !stop ? 250 : null);
 
 	return (
-		<Profiler id="Container" onRender={(...p)=> console.log()}>
-			<div id='container' ref={containerRef} tabIndex="0" onKeyDown={onKeyDownHandler} className="body">
-				<div className="container">
-					<div className="score">Your Score: {snake.length - 1}</div>
-					{children}
-				</div>
+		<div id='container' ref={containerRef} tabIndex="0" onKeyDown={onKeyDownHandler} className="body">
+			<div className="container">
+				<div className="score">Your Score: {snake.length - 1}</div>
+				{children}
 			</div>
-		</Profiler>
+		</div>
 	);
 });
 
