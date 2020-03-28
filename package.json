@@ -2,6 +2,7 @@
   "name": "snake-game",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://rt-cff.github.io/snake_game",
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
