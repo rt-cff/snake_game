@@ -14,14 +14,18 @@ const GameMsg = React.memo(({stop, onConfirm}) => {
 	if(!stop) return null
 
 	return (
+		<React.Profiler>
 		<div className="msg">
+			<div className="msg-bg" />
 			<div>
 				<div className="msg-title">{msgObj.msg}</div>
 				<button onClick={onConfirm} className="msg-btn">
 					{msgObj.btnTitle}
 				</button>
 			</div>
-		</div>
+		</div>			
+		</React.Profiler>
+
 	)
 })
 GameMsg.displayName = 'GameMsg'
