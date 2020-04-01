@@ -14,8 +14,7 @@ const getRow = (snake, food, y) => x => {
 
 const Row = ({ yaxis: y }) => {
 	const { state: { snake, food } } = useContext(SnakeContext)
-	// const row = useMemo(() => _range(14).map(getRow(snake, food, y)), [snake, food, y])
-	const row = _range(14).map(getRow(snake, food, y))
+	const row = useMemo(() => _range(14).map(getRow(snake, food, y)), [snake, food, y])
 
 	return <div className="row">{row}</div>
 }
