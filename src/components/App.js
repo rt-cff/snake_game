@@ -41,8 +41,7 @@ let prev = null
 const App = () => {
 	const {
 		state: { stop },
-		reset, 
-		dummyAction
+		reset
 	} = useContext(SnakeContext);
 	const containerRef = React.createRef()
 
@@ -55,10 +54,7 @@ const App = () => {
 	return (
 		<Container ref={containerRef}>
 			<GameMsg stop = {stop} onConfirm = {reset}/>
-			{rows}
-
-			<button onClick = {dummyAction}>Dummy Action</button>
-		</Container>
+			{rows}		</Container>
 	);
 };
 
