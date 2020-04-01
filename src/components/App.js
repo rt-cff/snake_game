@@ -32,6 +32,7 @@ GameMsgComponent.displayName = 'GameMsg'
 const GameMsg = React.memo(GameMsgComponent)
 
 const getRows = (rows) => {
+	console.log('memo')
 	return _range(rows).map(r => <Row key = {r} yaxis = {r} />)
 }
 
@@ -41,6 +42,7 @@ const App = () => {
 	const {
 		state: { stop },
 		reset, 
+		dummyAction
 	} = useContext(SnakeContext);
 	const containerRef = React.createRef()
 
@@ -48,13 +50,14 @@ const App = () => {
 		containerRef.current.focus()
 	}, [])
 
-	// const rows = useMemo(() => getRows(11), [])
-	const rows = getRows(11)
+	const rows = useMemo(() => getRows(11), [])
 
 	return (
 		<Container ref={containerRef}>
 			<GameMsg stop = {stop} onConfirm = {reset}/>
 			{rows}
+
+			<button onClick = {dummyAction}>Dummy Action</button>
 		</Container>
 	);
 };
