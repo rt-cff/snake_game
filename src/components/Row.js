@@ -1,40 +1,22 @@
-import React, {
-	cloneElement,
-	useContext,
-	useState,
-	useEffect,
-	useMemo
-} from "react";
-import { Context as SnakeContext } from "../context/SnakeContext";
+import React, {useContext, useMemo} from "react";
+import { Context as SnakeContext } from '../context/SnakeContext'
 import Cell from "./Cell";
 
-const Row = ({ yaxis }) => {
-	const {
-		state: { snake, food }
-	} = useContext(SnakeContext);
+import _range from 'lodash/range'
 
-	const row = useMemo(() => {
-		return [...Array(14)].map((v, i) => {
-			let active = false;
-			let _food = false;
-			let head = false
-			snake.forEach((piece) => {
-				if (piece.x === i && piece.y === yaxis) {
-					active = true;
-				}
-			});
+const getRow = (snake, food, y) => x => {
+	const active = snake.filter(s => s.y === y).map(s => s.x).includes(x)
+	const head = snake[0].y === y ? snake[0].x === x : false
+	const _food =  food.y === y ? food.x === x : false
 
-			if(snake[0].x === i && snake[0].y === yaxis) 
-				head = true;
+	return <Cell key={x} active={active} head={head} food={_food} />
+}
 
-			if (food.x === i && food.y === yaxis) {
-				_food = true;
-			}
-			return <Cell key={i} food={_food} active={active} head={head}/>;
-		});
-	}, [snake, food]);
+const Row = ({ yaxis: y }) => {
+	const { state: { snake, food } } = useContext(SnakeContext)
+	const row = useMemo(() => _range(14).map(getRow(snake, food, y)), [snake, food, y])
 
-	return <div className="row">{row}</div>;
-};
+	return <div className="row">{row}</div>
+}
 
 export default Row;

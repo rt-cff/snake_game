@@ -5,7 +5,7 @@ import _ from "lodash";
 
 let LAST_LOCATION = {};
 
-const Container = React.forwardRef(({ children }, ref) => {
+const Container = ({ children }, ref) => {
 	const {
 		state: { snake, foodExist, food, stop },
 		changeDirection,
@@ -63,6 +63,7 @@ const Container = React.forwardRef(({ children }, ref) => {
 			</div>
 		</div>
 	);
-});
+};
+Container.displayName = 'Container'
 
-export default Container;
+export default React.forwardRef(Container);
