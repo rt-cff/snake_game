@@ -54,7 +54,8 @@ const App = () => {
 	return (
 		<Container ref={containerRef}>
 			<GameMsg stop = {stop} onConfirm = {reset}/>
-			{rows}		</Container>
+			{rows}		
+		</Container>
 	);
 };
 

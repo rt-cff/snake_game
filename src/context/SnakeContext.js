@@ -1,18 +1,16 @@
 import createContextHelper from "./create.context.helper";
 import { act } from "react-dom/test-utils";
 
-const DIRECTION = ["left", "top", "right", "down"];
-/*
-	Left & Right Directiocn is at index 0 & 2 and have x value change at index - 1 per interval
-	Top & Down Directiocn is at index 1 & 3 and have y value change at index - 2 per interval
-*/
+import {DIRECTION, randomFoodPosition, moveUtil} from './util'
 
 const initialState = {
 	snake: [{ x: 6, y: 5 }],
 	direct: "top",
-	food: {},
+	food: randomFoodPosition([{ x: 6, y: 5 }]),
+	food: {x:6,y:3},
 	foodExist: false,
-	stop: true
+	stop: true, 
+	lastLocation: {}
 };
 
 const reducer = (state, { type, payload }) => {
@@ -24,7 +22,7 @@ const reducer = (state, { type, payload }) => {
 			//return original state if same direction or opposite direction
 			return (state.direct === payload || Math.abs(DIRECTION.indexOf(payload) - DIRECTION.indexOf(state.direct)) === 2) ? state : { ...state, direct: payload };
 		case actionTypes.MOVE:
-			return { ...state, snake: moveUtil(state) };
+			return { ...state, snake: moveUtil(state), lastLocation: state.snake.slice(-1)[0]};
 		case actionTypes.CREATE_FOOD:
 			return { ...state, food: randomFoodPosition(state.snake), foodExist: true }
 		case actionTypes.EAT_FOOD:
@@ -34,23 +32,29 @@ const reducer = (state, { type, payload }) => {
 		case actionTypes.RESET:
 			//do no reset if the game is running
 			return state.stop ? { ...initialState, stop: false } : state;
+		case actionTypes.CHECK_STATUS:
+			if (
+				state.snake[0].x < 0 ||
+				state.snake[0].y < 0 ||
+				state.snake[0].x > 13 ||
+				state.snake[0].y > 10 ||
+				state.snake.slice(1).some(s => s.x === state.snake[0].x && s.y === state.snake[0].y)
+			) return { ...state, stop: true }
+			return state
+		case actionTypes.CHECK_FOOD_STATUS:
+			if(state.snake[0].x === state.food.x && state.snake[0].y === state.food.y)
+				return { 
+					...state, 
+					snake: [...state.snake, state.lastLocation], 
+					food: randomFoodPosition(state.snake), 
+					foodExist: true
+				}
+			else 
+				return state
 		default:
 			return state;
 	}
 };
-
-const moveUtil = (state) => {
-	const { direct, snake } = state;
-	let { x, y } = snake[0];
-	const dirIndex = DIRECTION.indexOf(direct);
-
-	if(dirIndex % 2 === 0) 
-		x += dirIndex - 1;
-	else 
-		y += dirIndex - 2;
-
-	return [{ x, y }, ...snake.slice(0, -1)]
-}
 
 const move = (dispatch) => () => {
 	dispatch({
@@ -90,9 +94,21 @@ const reset = (dispatch) => () => {
 	});
 };
 
+const checkStatus = (dispatch) => () => {
+	dispatch({
+		type: actionTypes.CHECK_STATUS
+	})
+}
+
+const checkFoodStatus = (dispatch) => () => {
+	dispatch({
+		type: actionTypes.CHECK_FOOD_STATUS
+	})
+}
+
 export const { Context, Provider } = createContextHelper(
 	reducer,
-	{ changeDirection, move, createFood, eatFood, setStop, reset },
+	{ changeDirection, move, createFood, eatFood, setStop, reset, checkStatus, checkFoodStatus },
 	initialState
 );
 
@@ -102,11 +118,7 @@ const actionTypes = {
 	CREATE_FOOD: "CREATE_FOOD",
 	EAT_FOOD: "EAT_FOOD",
 	STOP: "STOP",
-	RESET: "RESET"
-};
-
-const randomFoodPosition = (snake) => {
-	const x = Math.floor(Math.random() * 14), y = Math.floor(Math.random() * 11);
-	
-	return snake.some(s => s.x === x && s.y === y) ? randomFoodPosition(snake) : {x, y}
+	RESET: "RESET", 
+	CHECK_STATUS: "CHECK_STATUS", 
+	CHECK_FOOD_STATUS: "CHECK_FOOD_STATUS", 
 };
