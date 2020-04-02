@@ -7,6 +7,9 @@ export const DIRECTION = ["left", "top", "right", "down"];
 export const randomFoodPosition = (snake = []) => {
 	const x = Math.floor(Math.random() * 14), y = Math.floor(Math.random() * 11);
 	
+	if(snake.length >= 14 * 11 - 1)
+		throw('No More Available Space')
+
 	return snake.some(s => s.x === x && s.y === y) ? randomFoodPosition(snake) : {x, y}
 };
 
