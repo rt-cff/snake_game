@@ -1,13 +1,13 @@
 import createContextHelper from "./create.context.helper";
 import { act } from "react-dom/test-utils";
 
-import {DIRECTION, randomFoodPosition, moveUtil} from './util'
+import {DIRECTION, randomFoodPosition, moveUtil, changeDirectionUtil} from './util'
 
 const initialState = {
 	snake: [{ x: 6, y: 5 }],
-	direct: "top",
+	direct: [DIRECTION[1]],
+	lastDirect: DIRECTION[1], 
 	food: randomFoodPosition([{ x: 6, y: 5 }]),
-	food: {x:6,y:3},
 	foodExist: false,
 	stop: true, 
 	lastLocation: {}
@@ -20,9 +20,10 @@ const reducer = (state, { type, payload }) => {
 				return state
 
 			//return original state if same direction or opposite direction
-			return (state.direct === payload || Math.abs(DIRECTION.indexOf(payload) - DIRECTION.indexOf(state.direct)) === 2) ? state : { ...state, direct: payload };
+			// return (state.direct[0] === payload || Math.abs(DIRECTION.indexOf(payload) - DIRECTION.indexOf(state.direct[0])) === 2) ? state : { ...state, direct: [...state.direct, payload] };
+			return changeDirectionUtil(state, payload)
 		case actionTypes.MOVE:
-			return { ...state, snake: moveUtil(state), lastLocation: state.snake.slice(-1)[0]};
+			return { ...state, snake: moveUtil(state), lastLocation: state.snake.slice(-1)[0], direct: state.direct.slice(1), lastDirect: state.direct[0] || state.lastDirect};
 		case actionTypes.CREATE_FOOD:
 			return { ...state, food: randomFoodPosition(state.snake), foodExist: true }
 		case actionTypes.EAT_FOOD:
@@ -107,7 +108,11 @@ const checkFoodStatus = (dispatch) => () => {
 }
 
 export const { Context, Provider } = createContextHelper(
-	reducer,
+	(...p) => {
+		const state = reducer(...p)
+		console.log('Reducer State ', state)
+		return state
+	},
 	{ changeDirection, move, createFood, eatFood, setStop, reset, checkStatus, checkFoodStatus },
 	initialState
 );
