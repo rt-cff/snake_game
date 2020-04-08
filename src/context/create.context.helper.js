@@ -1,4 +1,4 @@
-import React, { createContext, useReducer, useCallback, useMemo } from "react";
+import React, { createContext, useReducer, useContext, useCallback, useMemo } from "react";
 
 const getActions = (actions, dispatch, state) => {
 	const boundActions = {}
@@ -23,7 +23,7 @@ export default (reducer, actions, initialState) => {
 
 		const boundActions = useMemo(() => getActions(actions, dispatch), [actions, dispatch]);
 		// const boundActions = getActions(actions, dispatch, state);
-
+console.log('here', children)
 		return (
 			<Context.Provider value={{ state, ...boundActions }}>
 				{children}
@@ -31,5 +31,7 @@ export default (reducer, actions, initialState) => {
 		);
 	};
 
-	return { Context, Provider };
+	const _useContext = () => useContext(Context)
+
+	return { Context, Provider, useContext: _useContext };
 };

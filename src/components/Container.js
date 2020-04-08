@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useCallback, useRef, useImperativeHandle } from "react";
-import { Context as SnakeContext } from "../context/SnakeContext";
+import { Context as SnakeContext, useContext as useSnakeContext } from "../context/SnakeContext";
 import useInterval from "../hooks/useInterval";
 import _ from "lodash";
 
@@ -16,7 +16,8 @@ const Container = ({ children }, ref) => {
 		reset, 
 		checkStatus, 
 		checkFoodStatus
-	} = useContext(SnakeContext);
+	// } = useContext(SnakeContext);
+	} = useSnakeContext();
 	const containerRef = useRef();
 
 	useImperativeHandle(ref, () => ({

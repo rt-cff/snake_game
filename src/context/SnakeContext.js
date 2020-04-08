@@ -107,7 +107,7 @@ const checkFoodStatus = (dispatch) => () => {
 	})
 }
 
-export const { Context, Provider } = createContextHelper(
+export const { Context, Provider, useContext } = createContextHelper(
 	(...p) => {
 		const state = reducer(...p)
 		console.log('Reducer State ', state)
